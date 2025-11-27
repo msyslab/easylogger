@@ -417,9 +417,14 @@ Les fonctions seront alors disponibles sous les noms :
 - `ELWrite-Log`
 - `ELWrite-LogProgress`
 - `ELGet-LogText`
+- `ELGet-LogObject`
 - `ELClear-LogBuffer`
 - `ELSave-LogToFile`
 - `ELGet-LogBufferIds`
+- `ELExport-LogBuffers`
+- `ELImport-LogBuffers`
+- `ELGet-LogBufferIds`
+- `ELGet-LogSummary`
 
 Exemple :
 
