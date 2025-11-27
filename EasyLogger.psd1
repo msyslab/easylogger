@@ -1,7 +1,7 @@
 @{
     # Module manifest for EasyLogger
     RootModule        = 'EasyLogger.psm1'
-    ModuleVersion     = '1.1.0'
+    ModuleVersion     = '1.1.1'
     GUID              = '8c7c8d3c-3f5d-4a1b-9f39-2a9f0c8a5c12'
 
     Author            = 'msyslab'
@@ -17,7 +17,7 @@
         'Write-Log',
         'Write-LogProgress',
         'Get-LogText',
-        'Get-LogObjects',
+        'Get-LogObject',
         'Clear-LogBuffer',
         'Save-LogToFile',
         'Get-LogBufferIds',
