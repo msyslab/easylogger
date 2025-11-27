@@ -381,8 +381,9 @@ Seules les couleurs indiquées sont modifiées, les autres gardent leur valeur p
 
 ---
 
-# 🔧 Installation manuelle
+# 🔧 Installation
 
+####  Méthode 1 : En téléchargeant plaçant directement les fichiers à la main :
 Créer le dossier :
 
 ```
@@ -394,10 +395,21 @@ Y placer :
 - `EasyLogger.psd1`
 - `EasyLogger.psm1`
 
-Puis :
+#### Méthode 2 : En téléchargeant directement depuis github (recommandé):
+
+Se rendre avec le terminal dans le dossier `Documents\PowerShell\Modules\EasyLogger\` de l'utilisateur courant (où dans le dossier `Modules` dans Program File pour l'installation en global sur la machine) puis :
+```powershell
+git clone https://github.com/msyslab/easylogger
+```
+Pour mettre à jour le module en cas de nouvelle release, se rendre dans le dossier easylogger puis :
+```
+git pull
+```
+
+Pour l'importer dans un script :
 
 ```powershell
-Import-Module EasyLogger
+Import-Module EasyLogger -Force #Le -Force permet de recharger tout le module à chaque fois. Nécessaire en cas de mise à jour.
 Initialize-EasyLogger
 ```
 
