@@ -197,7 +197,7 @@ Avec filtres :
 
 ```powershell
 Save-LogToFile -Path "C:\logs\errors.log" -MinSeverity Error
-Save-LogToFile -Path "C:\logs\short.log"  -MaxLevel 1 -ShowTimestamp $false
+Save-LogToFile -Path "C:\logs\short.log"  -MaxLevel 1 -IncludeTimestamp:$true
 ```
 
 ---
