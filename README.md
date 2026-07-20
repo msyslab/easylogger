@@ -461,6 +461,7 @@ Write-Log "OK" -Type Success -BufferIds "api"
 
 Save-LogToFile -Path "C:\logs\all.log"
 Save-LogToFile -Path "C:\logs\debug.log" -BufferId "api"
+Save-LogToFile -Path "C:\logs\debug.log" -BufferId "api" -IncludeTimestamp:$true
 
 Export-LogBuffers -Path "session.json"
 
