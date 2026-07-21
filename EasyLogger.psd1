@@ -1,7 +1,7 @@
 @{
     # Module manifest for EasyLogger
     RootModule        = 'EasyLogger.psm1'
-    ModuleVersion     = '1.1.1'
+    ModuleVersion     = '1.1.2'
     GUID              = '8c7c8d3c-3f5d-4a1b-9f39-2a9f0c8a5c12'
 
     Author            = 'msyslab'
