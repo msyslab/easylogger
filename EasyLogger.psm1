@@ -1128,12 +1128,292 @@ function Import-LogBuffers {
 
 
 # ============================================================================
+# Write-LogTitle (titre en ASCII art)
+# ============================================================================
+# --- Données de la police FIGlet "Standard" (rendu identique à patorjk.com/software/taag) ---
+# Chaque caractère (code ASCII 32 à 126) est décrit sur 6 lignes.
+# Le symbole '$' est un "hardblank" : un espace insécable remplacé par un vrai
+# espace au moment de l'affichage.
+$script:FigletFont = @{
+    [char]32 = @(' $', ' $', ' $', ' $', ' $', ' $')
+    [char]33 = @('  _ ', ' | |', ' | |', ' |_|', ' (_)', '    ')
+    [char]34 = @('  _ _ ', ' ( | )', '  V V ', '   $  ', '   $  ', '      ')
+    [char]35 = @('    _  _   ', '  _| || |_ ', ' |_  ..  _|', ' |_      _|', '   |_||_|  ', '           ')
+    [char]36 = @('   _  ', '  | | ', ' / __)', ' \__ \', ' (   /', '  |_| ')
+    [char]37 = @('  _  __', ' (_)/ /', '   / / ', '  / /_ ', ' /_/(_)', '       ')
+    [char]38 = @('   ___   ', '  ( _ )  ', '  / _ \/\', ' | (_>  <', '  \___/\/', '         ')
+    [char]39 = @('  _ ', ' ( )', ' |/ ', '  $ ', '  $ ', '    ')
+    [char]40 = @('   __', '  / /', ' | | ', ' | | ', ' | | ', '  \_\')
+    [char]41 = @(' __  ', ' \ \ ', '  | |', '  | |', '  | |', ' /_/ ')
+    [char]42 = @('       ', ' __/\__', ' \    /', ' /_  _\', '   \/  ', '       ')
+    [char]43 = @('        ', '    _   ', '  _| |_ ', ' |_   _|', '   |_|  ', '        ')
+    [char]44 = @('    ', '    ', '    ', '  _ ', ' ( )', ' |/ ')
+    [char]45 = @('        ', '        ', '  _____ ', ' |_____|', '    $   ', '        ')
+    [char]46 = @('    ', '    ', '    ', '  _ ', ' (_)', '    ')
+    [char]47 = @('     __', '    / /', '   / / ', '  / /  ', ' /_/   ', '       ')
+    [char]48 = @('   ___  ', '  / _ \ ', ' | | | |', ' | |_| |', '  \___/ ', '        ')
+    [char]49 = @('  _ ', ' / |', ' | |', ' | |', ' |_|', '    ')
+    [char]50 = @('  ____  ', ' |___ \ ', '   __) |', '  / __/ ', ' |_____|', '        ')
+    [char]51 = @('  _____ ', ' |___ / ', '   |_ \ ', '  ___) |', ' |____/ ', '        ')
+    [char]52 = @('  _  _   ', ' | || |  ', ' | || |_ ', ' |__   _|', '    |_|  ', '         ')
+    [char]53 = @('  ____  ', ' | ___| ', ' |___ \ ', '  ___) |', ' |____/ ', '        ')
+    [char]54 = @('   __   ', '  / /_  ', ' | ''_ \ ', ' | (_) |', '  \___/ ', '        ')
+    [char]55 = @('  _____ ', ' |___  |', '    / / ', '   / /  ', '  /_/   ', '        ')
+    [char]56 = @('   ___  ', '  ( _ ) ', '  / _ \ ', ' | (_) |', '  \___/ ', '        ')
+    [char]57 = @('   ___  ', '  / _ \ ', ' | (_) |', '  \__, |', '    /_/ ', '        ')
+    [char]58 = @('    ', '  _ ', ' (_)', '  _ ', ' (_)', '    ')
+    [char]59 = @('    ', '  _ ', ' (_)', '  _ ', ' ( )', ' |/ ')
+    [char]60 = @('   __', '  / /', ' / / ', ' \ \ ', '  \_\', '     ')
+    [char]61 = @('        ', '  _____ ', ' |_____|', ' |_____|', '    $   ', '        ')
+    [char]62 = @(' __  ', ' \ \ ', '  \ \', '  / /', ' /_/ ', '     ')
+    [char]63 = @('  ___ ', ' |__ \', '   / /', '  |_| ', '  (_) ', '      ')
+    [char]64 = @('    ____  ', '   / __ \ ', '  / / _` |', ' | | (_| |', '  \ \__,_|', '   \____/ ')
+    [char]65 = @('     _    ', '    / \   ', '   / _ \  ', '  / ___ \ ', ' /_/   \_\', '          ')
+    [char]66 = @('  ____  ', ' | __ ) ', ' |  _ \ ', ' | |_) |', ' |____/ ', '        ')
+    [char]67 = @('   ____ ', '  / ___|', ' | |    ', ' | |___ ', '  \____|', '        ')
+    [char]68 = @('  ____  ', ' |  _ \ ', ' | | | |', ' | |_| |', ' |____/ ', '        ')
+    [char]69 = @('  _____ ', ' | ____|', ' |  _|  ', ' | |___ ', ' |_____|', '        ')
+    [char]70 = @('  _____ ', ' |  ___|', ' | |_   ', ' |  _|  ', ' |_|    ', '        ')
+    [char]71 = @('   ____ ', '  / ___|', ' | |  _ ', ' | |_| |', '  \____|', '        ')
+    [char]72 = @('  _   _ ', ' | | | |', ' | |_| |', ' |  _  |', ' |_| |_|', '        ')
+    [char]73 = @('  ___ ', ' |_ _|', '  | | ', '  | | ', ' |___|', '      ')
+    [char]74 = @('      _ ', '     | |', '  _  | |', ' | |_| |', '  \___/ ', '        ')
+    [char]75 = @('  _  __', ' | |/ /', ' | '' / ', ' | . \ ', ' |_|\_\', '       ')
+    [char]76 = @('  _     ', ' | |    ', ' | |    ', ' | |___ ', ' |_____|', '        ')
+    [char]77 = @('  __  __ ', ' |  \/  |', ' | |\/| |', ' | |  | |', ' |_|  |_|', '         ')
+    [char]78 = @('  _   _ ', ' | \ | |', ' |  \| |', ' | |\  |', ' |_| \_|', '        ')
+    [char]79 = @('   ___  ', '  / _ \ ', ' | | | |', ' | |_| |', '  \___/ ', '        ')
+    [char]80 = @('  ____  ', ' |  _ \ ', ' | |_) |', ' |  __/ ', ' |_|    ', '        ')
+    [char]81 = @('   ___  ', '  / _ \ ', ' | | | |', ' | |_| |', '  \__\_\', '        ')
+    [char]82 = @('  ____  ', ' |  _ \ ', ' | |_) |', ' |  _ < ', ' |_| \_\', '        ')
+    [char]83 = @('  ____  ', ' / ___| ', ' \___ \ ', '  ___) |', ' |____/ ', '        ')
+    [char]84 = @('  _____ ', ' |_   _|', '   | |  ', '   | |  ', '   |_|  ', '        ')
+    [char]85 = @('  _   _ ', ' | | | |', ' | | | |', ' | |_| |', '  \___/ ', '        ')
+    [char]86 = @(' __     __', ' \ \   / /', '  \ \ / / ', '   \ V /  ', '    \_/   ', '          ')
+    [char]87 = @(' __        __', ' \ \      / /', '  \ \ /\ / / ', '   \ V  V /  ', '    \_/\_/   ', '             ')
+    [char]88 = @(' __  __', ' \ \/ /', '  \  / ', '  /  \ ', ' /_/\_\', '       ')
+    [char]89 = @(' __   __', ' \ \ / /', '  \ V / ', '   | |  ', '   |_|  ', '        ')
+    [char]90 = @('  _____', ' |__  /', '   / / ', '  / /_ ', ' /____|', '       ')
+    [char]91 = @('  __ ', ' | _|', ' | | ', ' | | ', ' | | ', ' |__|')
+    [char]92 = @(' __    ', ' \ \   ', '  \ \  ', '   \ \ ', '    \_\', '       ')
+    [char]93 = @('  __ ', ' |_ |', '  | |', '  | |', '  | |', ' |__|')
+    [char]94 = @('  /\ ', ' |/\|', '   $ ', '   $ ', '   $ ', '     ')
+    [char]95 = @('        ', '        ', '        ', '        ', '  _____ ', ' |_____|')
+    [char]96 = @('  _ ', ' ( )', '  \|', '  $ ', '  $ ', '    ')
+    [char]97 = @('        ', '   __ _ ', '  / _` |', ' | (_| |', '  \__,_|', '        ')
+    [char]98 = @('  _     ', ' | |__  ', ' | ''_ \ ', ' | |_) |', ' |_.__/ ', '        ')
+    [char]99 = @('       ', '   ___ ', '  / __|', ' | (__ ', '  \___|', '       ')
+    [char]100 = @('      _ ', '   __| |', '  / _` |', ' | (_| |', '  \__,_|', '        ')
+    [char]101 = @('       ', '   ___ ', '  / _ \', ' |  __/', '  \___|', '       ')
+    [char]102 = @('   __ ', '  / _|', ' | |_ ', ' |  _|', ' |_|  ', '      ')
+    [char]103 = @('        ', '   __ _ ', '  / _` |', ' | (_| |', '  \__, |', '  |___/ ')
+    [char]104 = @('  _     ', ' | |__  ', ' | ''_ \ ', ' | | | |', ' |_| |_|', '        ')
+    [char]105 = @('  _ ', ' (_)', ' | |', ' | |', ' |_|', '    ')
+    [char]106 = @('    _ ', '   (_)', '   | |', '   | |', '  _/ |', ' |__/ ')
+    [char]107 = @('  _    ', ' | | __', ' | |/ /', ' |   < ', ' |_|\_\', '       ')
+    [char]108 = @('  _ ', ' | |', ' | |', ' | |', ' |_|', '    ')
+    [char]109 = @('            ', '  _ __ ___  ', ' | ''_ ` _ \ ', ' | | | | | |', ' |_| |_| |_|', '            ')
+    [char]110 = @('        ', '  _ __  ', ' | ''_ \ ', ' | | | |', ' |_| |_|', '        ')
+    [char]111 = @('        ', '   ___  ', '  / _ \ ', ' | (_) |', '  \___/ ', '        ')
+    [char]112 = @('        ', '  _ __  ', ' | ''_ \ ', ' | |_) |', ' | .__/ ', ' |_|    ')
+    [char]113 = @('        ', '   __ _ ', '  / _` |', ' | (_| |', '  \__, |', '     |_|')
+    [char]114 = @('       ', '  _ __ ', ' | ''__|', ' | |   ', ' |_|   ', '       ')
+    [char]115 = @('      ', '  ___ ', ' / __|', ' \__ \', ' |___/', '      ')
+    [char]116 = @('  _   ', ' | |_ ', ' | __|', ' | |_ ', '  \__|', '      ')
+    [char]117 = @('        ', '  _   _ ', ' | | | |', ' | |_| |', '  \__,_|', '        ')
+    [char]118 = @('        ', ' __   __', ' \ \ / /', '  \ V / ', '   \_/  ', '        ')
+    [char]119 = @('           ', ' __      __', ' \ \ /\ / /', '  \ V  V / ', '   \_/\_/  ', '           ')
+    [char]120 = @('       ', ' __  __', ' \ \/ /', '  >  < ', ' /_/\_\', '       ')
+    [char]121 = @('        ', '  _   _ ', ' | | | |', ' | |_| |', '  \__, |', '  |___/ ')
+    [char]122 = @('      ', '  ____', ' |_  /', '  / / ', ' /___|', '      ')
+    [char]123 = @('    __', '   / /', '  | | ', ' < <  ', '  | | ', '   \_\')
+    [char]124 = @('  _ ', ' | |', ' | |', ' | |', ' | |', ' |_|')
+    [char]125 = @(' __   ', ' \ \  ', '  | | ', '   > >', '  | | ', ' /_/  ')
+    [char]126 = @('  /\/|', ' |/\/ ', '   $  ', '   $  ', '   $  ', '      ')
+}
+
+$script:FigletHeight    = 6      # hauteur de la police en lignes
+$script:FigletHardBlank = '$'    # espace insécable interne à la police
+
+function Get-FigletMergedChar {
+    <#
+        Décide si deux caractères qui se touchent peuvent fusionner ("smushing"),
+        et si oui, lequel garder. Retourne $null si fusion impossible.
+        Règles de la police Standard : caractères égaux, '_' absorbé par
+        les traits, hiérarchie des traits (| puis / \ puis crochets...),
+        et paires de crochets qui deviennent '|'.
+    #>
+    param([string]$Gauche, [string]$Droite, [int]$LargeurPrec, [int]$LargeurCour)
+
+    if ($Gauche -eq ' ') { return $Droite }
+    if ($Droite -eq ' ') { return $Gauche }
+
+    if ($LargeurPrec -lt 2 -or $LargeurCour -lt 2) { return $null }
+
+    if ($Gauche -eq $script:FigletHardBlank -or $Droite -eq $script:FigletHardBlank) { return $null }
+
+    if ($Gauche -eq $Droite) { return $Gauche }
+
+    $regles = @(
+        @('_',  '|/\[]{}()<>'),
+        @('|',  '/\[]{}()<>'),
+        @('\/', '[]{}()<>'),
+        @('[]', '{}()<>'),
+        @('{}', '()<>'),
+        @('()', '<>')
+    )
+    foreach ($r in $regles) {
+        if ($r[0].Contains($Gauche) -and $r[1].Contains($Droite)) { return $Droite }
+        if ($r[0].Contains($Droite) -and $r[1].Contains($Gauche)) { return $Gauche }
+    }
+
+    foreach ($paire in @("$Gauche$Droite", "$Droite$Gauche")) {
+        if ($paire -in @('[]', '{}', '()')) { return '|' }
+    }
+
+    return $null
+}
+
+function Get-FigletOverlap {
+    <#
+        Calcule de combien de colonnes la nouvelle lettre peut empiéter
+        sur ce qui est déjà dessiné (le maximum commun à toutes les lignes).
+    #>
+    param([string[]]$Tampon, [string[]]$Glyphe, [int]$LargeurPrec, [int]$LargeurCour)
+
+    $maxChevauchement = $LargeurCour
+
+    for ($ligne = 0; $ligne -lt $script:FigletHeight; $ligne++) {
+        $gauche = $Tampon[$ligne]
+        $droite = $Glyphe[$ligne]
+
+        $bordGauche = $gauche.TrimEnd(' ').Length - 1
+        if ($bordGauche -lt 0) { $bordGauche = 0 }
+        if ($bordGauche -lt $gauche.Length) { $ch1 = [string]$gauche[$bordGauche] } else { $ch1 = '' }
+
+        $bordDroit = $droite.Length - $droite.TrimStart(' ').Length
+        if ($bordDroit -lt $droite.Length) { $ch2 = [string]$droite[$bordDroit] } else { $bordDroit = $droite.Length; $ch2 = '' }
+
+        $quantite = $bordDroit + $gauche.Length - 1 - $bordGauche
+
+        if ($ch1 -eq '' -or $ch1 -eq ' ') {
+            $quantite++
+        }
+        elseif ($ch2 -ne '' -and $null -ne (Get-FigletMergedChar $ch1 $ch2 $LargeurPrec $LargeurCour)) {
+            $quantite++
+        }
+
+        if ($quantite -lt $maxChevauchement) { $maxChevauchement = $quantite }
+    }
+
+    return $maxChevauchement
+}
+
+function ConvertTo-FigletArt {
+    <#
+        Assemble le texte complet : pour chaque lettre, calcule le
+        chevauchement possible, fusionne les bords, puis colle le reste.
+    #>
+    param([Parameter(Mandatory = $true)][string]$Texte)
+
+    $tampon = @('') * $script:FigletHeight
+    $largeurPrec = 0
+
+    foreach ($c in $Texte.ToCharArray()) {
+        if (-not $script:FigletFont.ContainsKey($c)) { continue }
+
+        $glyphe = $script:FigletFont[$c]
+        $largeurCour = $glyphe[0].Length
+        $chevauchement = Get-FigletOverlap $tampon $glyphe $largeurPrec $largeurCour
+
+        for ($ligne = 0; $ligne -lt $script:FigletHeight; $ligne++) {
+            $gauche = $tampon[$ligne]
+            $droite = $glyphe[$ligne]
+
+            for ($i = 0; $i -lt $chevauchement; $i++) {
+                $idx = $gauche.Length - $chevauchement + $i
+                if ($idx -ge 0 -and $idx -lt $gauche.Length) { $chGauche = [string]$gauche[$idx] } else { $chGauche = ' ' }
+                $fusion = Get-FigletMergedChar $chGauche ([string]$droite[$i]) $largeurPrec $largeurCour
+                if ($null -eq $fusion) { $fusion = [string]$droite[$i] }
+                if ($idx -ge 0 -and $idx -lt $gauche.Length) {
+                    $gauche = $gauche.Remove($idx, 1).Insert($idx, $fusion)
+                }
+            }
+
+            $tampon[$ligne] = $gauche + $droite.Substring($chevauchement)
+        }
+
+        $largeurPrec = $largeurCour
+    }
+
+    return $tampon | ForEach-Object { $_.Replace($script:FigletHardBlank, ' ') }
+}
+
+function Write-LogTitle {
+    <#
+    .SYNOPSIS
+    Affiche un titre en ASCII art (police FIGlet "Standard") dans la console.
+
+    .DESCRIPTION
+    Write-LogTitle convertit un texte en ASCII art et l'affiche directement
+    en console via Write-Host.
+
+    Contrairement à Write-Log :
+    - rien n'est stocké dans les buffers
+    - rien n'est écrit dans un fichier
+    - c'est un affichage console pur, pensé pour des titres/bannières
+
+    Respecte tout de même le paramètre global ShowConsole (Initialize-EasyLogger) :
+    si ShowConsole = $false, rien n'est affiché.
+
+    .PARAMETER Text
+    Texte à convertir en ASCII art.
+
+    .PARAMETER Color
+    Couleur d'affichage (Write-Host -ForegroundColor).
+    Si omis, la couleur par défaut de la console est utilisée.
+
+    .EXAMPLE
+    Write-LogTitle -Text "EasyLogger"
+
+    .EXAMPLE
+    Write-LogTitle -Text "EasyLogger" -Color Magenta
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Text,
+
+        [ValidateSet('Black','DarkBlue','DarkGreen','DarkCyan','DarkRed','DarkMagenta','DarkYellow','Gray','DarkGray','Blue','Green','Cyan','Red','Magenta','Yellow','White')]
+        [string]$Color
+    )
+
+    if (-not $script:LogConfig.ShowConsole) {
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return
+    }
+
+    $lignes = ConvertTo-FigletArt -Texte $Text
+
+    Write-Host ""
+    foreach ($ligne in $lignes) {
+        if ($Color) { Write-Host $ligne -ForegroundColor $Color }
+        else        { Write-Host $ligne }
+    }
+    Write-Host ""
+}
+
+# ============================================================================
 # Export public module members
 # ============================================================================
 Export-ModuleMember -Function `
     Initialize-EasyLogger, `
     Write-Log, `
     Write-LogProgress, `
+    Write-LogTitle, `
     Get-LogText, `
     Clear-LogBuffer, `
     Save-LogToFile, `

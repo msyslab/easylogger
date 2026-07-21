@@ -16,6 +16,7 @@
         'Initialize-EasyLogger',
         'Write-Log',
         'Write-LogProgress',
+        'Write-LogTitle',
         'Get-LogText',
         'Get-LogObject',
         'Clear-LogBuffer',

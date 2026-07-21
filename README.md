@@ -144,6 +144,30 @@ Clear-LogBuffer -BufferId "test" #Supprime le buffer test
 ```
 ---
 
+## 🔠 Titre en ASCII art (`Write-LogTitle`)
+
+`Write-LogTitle` affiche un texte converti en ASCII art (police FIGlet "Standard",
+rendu identique à [patorjk.com/software/taag](http://patorjk.com/software/taag)) directement en console.
+
+- Affichage console uniquement : rien n'est stocké dans les buffers, rien n'est écrit dans un fichier
+- Respecte le paramètre global `ShowConsole` (`Initialize-EasyLogger`)
+- Couleur optionnelle via `-Color` (couleur de console par défaut si omis)
+
+Signature :
+
+```powershell
+Write-LogTitle -Text <string> [-Color <ConsoleColor>]
+```
+
+Exemple :
+
+```powershell
+Write-LogTitle -Text "EasyLogger"
+Write-LogTitle -Text "EasyLogger" -Color Magenta
+```
+
+---
+
 ## 📊 Barre de progression (`Write-LogProgress`)
 
 `Write-LogProgress` est un wrapper léger autour de `Write-Progress` qui :
@@ -428,6 +452,7 @@ Les fonctions seront alors disponibles sous les noms :
 - `ELInitialize-EasyLogger`
 - `ELWrite-Log`
 - `ELWrite-LogProgress`
+- `ELWrite-LogTitle`
 - `ELGet-LogText`
 - `ELGet-LogObject`
 - `ELClear-LogBuffer`
@@ -478,6 +503,7 @@ Get-LogSummary
 | Initialize-EasyLogger | Reset complet                                |
 | Write-Log             | Ajoute une entrée                            |
 | Write-LogProgress     | Barre de progression                         |
+| Write-LogTitle        | Titre en ASCII art (console uniquement)      |
 | Stop-LogProgress      | Termine une barre                            |
 | Clear-LogBuffer       | Vide un buffer                               |
 | Get-LogText           | Retourne le texte des logs                   |
